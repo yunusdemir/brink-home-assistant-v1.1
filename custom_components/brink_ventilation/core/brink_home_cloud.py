@@ -6,8 +6,7 @@ import re
 import aiohttp
 import async_timeout
 
-from ..const import API_URL
-from ..sensor import SENSOR_TYPES
+from ..const import API_URL, SENSOR_TYPES
 from ..translations import TRANSLATIONS
 
 _LOGGER = logging.getLogger(__name__)
@@ -156,7 +155,7 @@ class BrinkHomeCloud:
             param_name = param.get("name", "")
 
             # Add CO2 sensors
-            if re.search(SENSOR_TYPES.get("co2").pattern, param_name):
+            if re.search(SENSOR_TYPES.get("co2")["pattern"], param_name):
                 _LOGGER.debug(f"Found CO2 sensor: {param_name}")
                 description_result[param_name] = self.__get_type(param)
 

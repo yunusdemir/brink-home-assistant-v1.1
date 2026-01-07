@@ -4,35 +4,19 @@ from __future__ import annotations
 import logging
 import re
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION
 from homeassistant.core import HomeAssistant
 
-from custom_components.brink_ventilation import BrinkHomeDeviceEntity
-
+from . import BrinkHomeDeviceEntity
 from .const import (
     DATA_CLIENT,
     DATA_COORDINATOR,
     DOMAIN,
+    SENSOR_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-# Define sensor types with their properties
-SENSOR_TYPES = {
-    "co2": {
-        "device_class": SensorDeviceClass.CO2,
-        "state_class": SensorStateClass.MEASUREMENT,
-        "unit": CONCENTRATION_PARTS_PER_MILLION,
-        "icon": "mdi:molecule-co2",
-        "pattern": r"(?=.*\bPPM\b)(?=.*\bCO2\b)",
-    },
-}
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):

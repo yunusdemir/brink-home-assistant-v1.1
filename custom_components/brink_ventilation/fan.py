@@ -3,16 +3,12 @@ from __future__ import annotations
 import logging
 import math
 
-from homeassistant.components.fan import (
-    DOMAIN,
-    FanEntity,
-    FanEntityFeature
-)
+from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.util.percentage import int_states_in_range, ranged_value_to_percentage, percentage_to_ranged_value
 
-from custom_components.brink_ventilation import BrinkHomeDeviceEntity
+from . import BrinkHomeDeviceEntity
 
 from .const import (
     DATA_CLIENT,
