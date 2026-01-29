@@ -30,14 +30,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     # Look for CO2 sensors and other specific sensors in the data
     for device_index, device_data in enumerate(coordinator.data):
         _LOGGER.debug(f"Device {device_index} available keys: {list(device_data.keys())}")
-        
-        # Check for CO2 sensors and other sensors that might be stored as top-level keys
+
+        # Check for sensors that might be stored as top-level keys
         for key, value in device_data.items():
             if isinstance(value, dict) and "name" in value and "value" in value:
                 # Check if the key matches any of our sensor patterns
                 for sensor_type, properties in SENSOR_TYPES.items():
                     if re.search(properties["pattern"], key):
-                        _LOGGER.debug(f"Found {sensor_type} sensor by key: {key}")
+                        _LOGGER.debug(f"Found {sensor_type} sensor: {key}")
                         entities.append(
                             BrinkSensor(
                                 client,
@@ -51,27 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                                 properties["icon"]
                             )
                         )
-            
-                # Also check the name field in the value dict as before
-                sensor_name = value.get("name", "")
-                _LOGGER.debug(f"Checking potential sensor: {sensor_name}")
-                
-                for sensor_type, properties in SENSOR_TYPES.items():
-                    if re.search(properties["pattern"], key):
-                        _LOGGER.debug(f"Found {sensor_type} sensor by name: {sensor_name}")
-                        entities.append(
-                            BrinkSensor(
-                                client,
-                                coordinator,
-                                device_index,
-                                key,
-                                sensor_name,
-                                properties["device_class"],
-                                properties["state_class"],
-                                properties["unit"],
-                                properties["icon"]
-                            )
-                        )
+                        break  # Only add each sensor once
 
     if entities:
         _LOGGER.info(f"Adding {len(entities)} sensor entities: {[e.entity_name for e in entities]}")
@@ -113,19 +93,28 @@ class BrinkSensor(BrinkHomeDeviceEntity, SensorEntity):
         """Return the state of the sensor."""
         try:
             # First try accessing the value directly as it might be a sensor key
-            value = self.coordinator.data[self.device_index][self.entity_name]
-            if isinstance(value, dict) and "value" in value:
-                value = value["value"]
-            
-            # Attempt to convert to a number if possible
-            try:
-                if isinstance(value, str) and "." in value:
-                    return float(value)
-                elif isinstance(value, str):
-                    return int(value)
-                return value
-            except (ValueError, TypeError):
-                return value
+            data = self.coordinator.data[self.device_index][self.entity_name]
+            if isinstance(data, dict) and "value" in data:
+                value = data["value"]
+
+                # For sensors with selectable list items (like bypass status),
+                # translate the value to the display text
+                if "values" in data and data["values"]:
+                    for item in data["values"]:
+                        if item.get("value") == value:
+                            return item.get("text", value)
+
+                # Otherwise attempt to convert to a number if possible
+                try:
+                    if isinstance(value, str) and "." in value:
+                        return float(value)
+                    elif isinstance(value, str):
+                        return int(value)
+                    return value
+                except (ValueError, TypeError):
+                    return value
+            else:
+                return data
         except (KeyError, TypeError, ValueError) as e:
             _LOGGER.debug(f"Error getting value for {self.entity_name}: {e}")
             return None

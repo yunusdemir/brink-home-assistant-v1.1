@@ -150,14 +150,15 @@ class BrinkHomeCloud:
             "filters_need_change": self.__get_type(filters_need_change)
         }
 
-        # Look for CO2 sensors and other sensors and add them to the result
+        # Look for all sensor types and add them to the result
         for param in all_parameters:
             param_name = param.get("name", "")
 
-            # Add CO2 sensors
-            if re.search(SENSOR_TYPES.get("co2")["pattern"], param_name):
-                _LOGGER.debug(f"Found CO2 sensor: {param_name}")
-                description_result[param_name] = self.__get_type(param)
+            # Check against all defined sensor types
+            for sensor_type, properties in SENSOR_TYPES.items():
+                if re.search(properties["pattern"], param_name):
+                    _LOGGER.debug(f"Found {sensor_type} sensor: {param_name}")
+                    description_result[param_name] = self.__get_type(param)
 
         _LOGGER.debug(
             "get_description_values result: %s",
