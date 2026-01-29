@@ -24,7 +24,7 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN, DEFAULT_NAME, DEFAULT_MODEL
 )
-from .core.brink_home_cloud import BrinkHomeCloud
+from .core.brink_api_v1_1 import BrinkAPIv1_1
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
     session = async_get_clientsession(hass)
-    brink_client = BrinkHomeCloud(session, username, password)
+    brink_client = BrinkAPIv1_1(session, username, password)
 
     try:
         await brink_client.login()
@@ -90,7 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_get_devices(hass: HomeAssistant, entry: ConfigEntry, brink_client: BrinkHomeCloud):
+async def async_get_devices(hass: HomeAssistant, entry: ConfigEntry, brink_client: BrinkAPIv1_1):
     """Fetch data from Brink Home API."""
 
     await brink_client.login()
