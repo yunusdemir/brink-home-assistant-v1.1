@@ -1,6 +1,11 @@
 """Constant values for the Brink Home component."""
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
-from homeassistant.const import CONCENTRATION_PARTS_PER_MILLION, UnitOfTime
+from homeassistant.const import (
+    CONCENTRATION_PARTS_PER_MILLION,
+    PERCENTAGE,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 
 DOMAIN = "brink_ventilation"
 DEFAULT_NAME = "Brink"
@@ -36,5 +41,40 @@ SENSOR_TYPES = {
         "unit": UnitOfTime.MINUTES,
         "icon": "mdi:timer-outline",
         "pattern": r"Restlaufzeit Betriebsartfunktion",
+    },
+    "fresh_air_temp": {
+        "device_class": SensorDeviceClass.TEMPERATURE,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "unit": UnitOfTemperature.CELSIUS,
+        "icon": "mdi:thermometer",
+        "pattern": r"Frischlufttemperatur",
+    },
+    "supply_air_temp": {
+        "device_class": SensorDeviceClass.TEMPERATURE,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "unit": UnitOfTemperature.CELSIUS,
+        "icon": "mdi:thermometer-lines",
+        "pattern": r"Zulufttemperatur",
+    },
+    "supply_air_flow": {
+        "device_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "unit": "m³/h",
+        "icon": "mdi:air-filter",
+        "pattern": r"Ist-Wert Luftdurchsatz Zuluft",
+    },
+    "exhaust_air_flow": {
+        "device_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "unit": "m³/h",
+        "icon": "mdi:air-filter",
+        "pattern": r"Ist-Wert Luftdurchsatz Abluft",
+    },
+    "humidity": {
+        "device_class": SensorDeviceClass.HUMIDITY,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "unit": PERCENTAGE,
+        "icon": "mdi:water-percent",
+        "pattern": r"Relative Feuchte",
     },
 }
