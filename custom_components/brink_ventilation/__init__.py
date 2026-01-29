@@ -100,13 +100,20 @@ async def async_get_devices(hass: HomeAssistant, entry: ConfigEntry, brink_clien
     # Retrieve additional description
     for system in systems:
         description = await brink_client.get_description_values(system["system_id"], system["gateway_id"])
-        
-        # Add core ventilation control values
-        system["ventilation"] = description["ventilation"]
-        system["mode"] = description["mode"]
-        system["filters_need_change"] = description["filters_need_change"]
-        
-        # Add any additional sensors (CO2, temperature, humidity, etc.)
+
+        # Map German parameter names to English keys for backward compatibility
+        param_mapping = {
+            "Lüftungsstufe": "ventilation",
+            "Betriebsart": "mode",
+            "Status Filtermeldung": "filters_need_change",
+        }
+
+        # Add core ventilation control values with mapped keys
+        for german_name, english_key in param_mapping.items():
+            if german_name in description:
+                system[english_key] = description[german_name]
+
+        # Add all parameters (including new sensors) with their original names
         for key, value in description.items():
             system[key] = value
 
@@ -143,10 +150,11 @@ class BrinkHomeDeviceEntity(CoordinatorEntity):
 
     @property
     def device_info(self):
-        """Return device info for the Eldes entity."""
+        """Return device info for the Brink entity."""
+        system_data = self.coordinator.data[self.device_index]
         return {
             "identifiers": {(DOMAIN, self.system_id, self.gateway_id)},
-            "name": self.data["name"],
+            "name": system_data["name"],
             "manufacturer": DEFAULT_NAME,
             "model": DEFAULT_MODEL
         }
