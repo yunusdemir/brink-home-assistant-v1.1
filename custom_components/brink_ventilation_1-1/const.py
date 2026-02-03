@@ -7,7 +7,7 @@ from homeassistant.const import (
     UnitOfTime,
 )
 
-DOMAIN = "brink_ventilation"
+DOMAIN = "brink_ventilation_1-1"
 DEFAULT_NAME = "Brink"
 DEFAULT_MODEL = "Zone"
 
