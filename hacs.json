@@ -1,5 +1,7 @@
 {
-  "name": "Brink-Home Ventilation",
+  "name": "Brink-home Ventilation (v1.1)",
+  "content_in_root": false,
+  "filename": "brink_ventilation_1-1",
   "hide_default_branch": true,
   "homeassistant": "2023.3.0",
   "render_readme": true
